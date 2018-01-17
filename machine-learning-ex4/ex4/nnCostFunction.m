@@ -74,7 +74,35 @@ J += reg;
 %         Hint: We recommend implementing backpropagation using a for-loop
 %               over the training examples if you are implementing it for the
 %               first time.
-%
+
+Delta1 = zeros(size(Theta1));
+Delta2 = zeros(size(Theta2));
+
+Xplus = [ones(size(X,1), 1) X];
+
+for t = 1:m
+  a1 = Xplus(t,:)';
+
+  z2 = Theta1 * a1;
+  a2 = sigmoid(z2);
+  a2 = [ones(1, size(a2,2)); a2];
+
+  z3 = Theta2 * a2;
+  a3 = sigmoid(z3);
+
+  error3 = a3 - new_y(t,:)';
+  error2 = (Theta2'*error3).* [1; sigmoidGradient(z2)];
+  error2 = error2(2:end);
+
+  Delta1 = Delta1 + error2 * a1';
+  Delta2 = Delta2 + error3 * a2';
+endfor
+
+Theta1_grad = Delta1/m;
+Theta2_grad = Delta2/m;
+
+
+
 % Part 3: Implement regularization with the cost function and gradients.
 %
 %         Hint: You can implement this around the code for
@@ -83,12 +111,13 @@ J += reg;
 %               and Theta2_grad from Part 2.
 %
 
+reg1 = lambda * (Theta1(:, 2:end));
+reg1 = [zeros(size(reg1,1), 1) reg1];
+Theta1_grad += reg1/m;
 
-
-
-
-
-
+reg2 = lambda * (Theta2(:, 2:end));
+reg2 = [zeros(size(reg2,1), 1) reg2];
+Theta2_grad += reg2/m;
 
 
 
